@@ -1,12 +1,13 @@
-import "./globals.css";
-import Nav from "./auth/Nav";
-import { Roboto } from "@next/font/google";
-import QueryWrapper from "./auth/QueryWrapper";
+import './globals.css';
+import Nav from './auth/Nav';
+import { Roboto } from '@next/font/google';
+import QueryWrapper from './auth/QueryWrapper';
+
 
 const roboto = Roboto({
-  subsets: ["latin"],
-  weight: ["400", "700"],
-  variable: "--foont-roboto",
+  subsets: ['latin'],
+  weight: ['400', '700'],
+  variable: '--foont-roboto',
 });
 
 export default function RootLayout({ children }) {

@@ -1,23 +1,29 @@
-"use client";
-import { useState } from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import axios from "axios";
+'use client';
+import { useState } from 'react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import toast from 'react-hot-toast';
+import axios, { AxiosError } from 'axios';
 
 export default function CreatePost() {
-  const [title, setTitle] = useState("");
+  const [title, setTitle] = useState('');
   const [isDisabled, setIsDisabled] = useState(false);
 
   //Create a post
 
   const { mutate } = useMutation(
-    async (title: string) => await axios.post("/api/posts/addPost", { title }),
+    async (title: string) => await axios.post('/api/posts/addPost', { title }),
     {
       onError: (error) => {
+        if (error instanceof AxiosError) {
+          toast.error(error?.response?.data.message);
+        }
+        setIsDisabled(false);
         console.log(error);
       },
       onSuccess: (data) => {
+        toast.success('Post has been made!');
         console.log(data);
-        setTitle("");
+        setTitle('');
         setIsDisabled(false);
       },
     }
@@ -43,7 +49,7 @@ export default function CreatePost() {
       <div className="flex items-center justify-between gap-2">
         <p
           className={`font-bold text-sm ${
-            title.length > 300 ? "text-red-700" : "text-gray-700"
+            title.length > 300 ? 'text-red-700' : 'text-gray-700'
           } `}
         >{`${title.length}/300`}</p>
         <button
