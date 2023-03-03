@@ -9,9 +9,11 @@ export default async function handler(
   if (req.method === 'GET') {
     //Fetch all post
     try {
+        
       const data = await prisma.post.findMany({
         include: {
           user: true,
+          comments: true,
         },
         orderBy: {
           createdAt: 'desc',
