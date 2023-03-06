@@ -1,19 +1,20 @@
-'use client';
-import { useState } from 'react';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import toast from 'react-hot-toast';
-import axios, { AxiosError } from 'axios';
+"use client";
+import { useState } from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import toast from "react-hot-toast";
+import axios, { AxiosError } from "axios";
 
 export default function CreatePost() {
-  const [title, setTitle] = useState('');
+  const [title, setTitle] = useState("");
   const [isDisabled, setIsDisabled] = useState(false);
+  const queryClient = useQueryClient();
 
   let toastPostID: string;
 
   //Create a post
 
   const { mutate } = useMutation(
-    async (title: string) => await axios.post('/api/posts/addPost', { title }),
+    async (title: string) => await axios.post("/api/posts/addPost", { title }),
     {
       onError: (error) => {
         if (error instanceof AxiosError) {
@@ -23,9 +24,10 @@ export default function CreatePost() {
         console.log(error);
       },
       onSuccess: (data) => {
-        toast.success('Post has been made!', { id: toastPostID });
+        toast.success("Post has been made!", { id: toastPostID });
+        queryClient.invalidateQueries(["posts"]);
         console.log(data);
-        setTitle('');
+        setTitle("");
         setIsDisabled(false);
       },
     }
@@ -33,7 +35,7 @@ export default function CreatePost() {
 
   const submitPost = async (e: React.FormEvent) => {
     e.preventDefault();
-    toastPostID = toast.loading('Creating your post', { id: toastPostID });
+    toastPostID = toast.loading("Creating your post", { id: toastPostID });
     setIsDisabled(true);
     mutate(title);
   };
@@ -52,7 +54,7 @@ export default function CreatePost() {
       <div className="flex items-center justify-between gap-2">
         <p
           className={`font-bold text-sm ${
-            title.length > 300 ? 'text-red-700' : 'text-gray-700'
+            title.length > 300 ? "text-red-700" : "text-gray-700"
           } `}
         >{`${title.length}/300`}</p>
         <button
