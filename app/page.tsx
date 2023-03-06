@@ -1,24 +1,24 @@
-'use client';
-import axios from 'axios';
-import AddPost from './components/AddPost';
-import Post from './components/Post';
-import { useQuery } from '@tanstack/react-query';
-import { PostType } from './Types/Post';
+"use client";
+import axios from "axios";
+import AddPost from "./components/AddPost";
+import Post from "./components/Post";
+import { useQuery } from "@tanstack/react-query";
+import { PostType } from "./Types/Post";
 
 //Fetch all post
 
 const allPosts = async () => {
-  const response = await axios.get('./api/posts/getPost');
+  const response = await axios.get("./api/posts/getPost");
   return response.data;
 };
 
 export default function Home() {
   const { data, error, isLoading } = useQuery<PostType[]>({
     queryFn: allPosts,
-    queryKey: ['posts'],
+    queryKey: ["posts"],
   });
   if (error) return error;
-  if (isLoading) return 'Loading...';
+  if (isLoading) return "Loading...";
   console.log(data);
   return (
     <main>
