@@ -1,10 +1,16 @@
-"use client";
+'use client';
 
-import { useMutation } from "@tanstack/react-query";
-import Image from "next/image";
-import { useState } from "react";
-import Toggle from "./Toggle";
-import axios from "axios";
+type ToggleProps = {
+  deletePowt: () => void;
+  setToggle: (toggle: boolean) => void;
+};
+
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import Image from 'next/image';
+import { useState } from 'react';
+import Toggle from './Toggle';
+import axios from 'axios';
+import toast from 'react-hot-toast';
 
 type EditProps = {
   id: string;
@@ -25,13 +31,31 @@ export default function EditPost({
   comments,
   id,
 }: EditProps) {
+  let deleteToastID: string;
+  const queryClient = useQueryClient();
   const [toggle, setToggle] = useState(false);
 
   //Delete Post
   const { mutate } = useMutation(
     async (id: string) =>
-      await axios.delete("/api/posts/deletePost", { data: id })
+      await axios.delete('/api/posts/deletePost', { data: id }),
+    {
+      onError: (error) => {
+        console.log(error);
+        toast.error('Error deleting that post', { id: deleteToastID });
+      },
+      onSuccess: (data) => {
+        console.log(data);
+        toast.success('Post has been deleted.', { id: deleteToastID });
+        queryClient.invalidateQueries(['auth-posts']);
+      },
+    }
   );
+
+  const deletePost = () => {
+    deleteToastID = toast.loading('Deleting your post.', { id: deleteToastID });
+    mutate(id);
+  };
 
   return (
     <>
@@ -47,10 +71,17 @@ export default function EditPost({
           <p className="text-sm font-bold text-gray-700">
             {comments?.length} Comments
           </p>
-          <button className="text-sm font-bold text-red-500">Delete</button>
+          <button
+            onClick={(e) => {
+              setToggle(true);
+            }}
+            className="text-sm font-bold text-red-500"
+          >
+            Delete
+          </button>
         </div>
       </div>
-      {toggle && <Toggle />}
+      {toggle && <Toggle deletePost={deletePost} setToggle={setToggle} />}
     </>
   );
 }
